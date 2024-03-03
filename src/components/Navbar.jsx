@@ -12,8 +12,13 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import { Link } from 'react-router-dom'; // Import Link
 
-const pages = ['ASK', 'UTILITY', 'CONTACT'];
+const pages = [
+  { name: 'Chat', link: 'chat' },
+  { name: 'Utility', link: 'utility' },
+  { name: 'Contact', link: 'contact' }
+];
 const settings = ['Profile', 'Logout'];
 
 export default function Navbar() {
@@ -27,7 +32,7 @@ export default function Navbar() {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
+  const handleCloseNavMenu = async () => {
     setAnchorElNav(null);
   };
 
@@ -43,8 +48,8 @@ export default function Navbar() {
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            component={Link} // Use Link component here
+            to="/" // Link to your home page
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -88,8 +93,11 @@ export default function Navbar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem 
+                  key={page.name} 
+                  onClick={handleCloseNavMenu} 
+                  component={()=><Link to={page.link} />}>
+                  <Typography textAlign="center">{page.name}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -98,8 +106,8 @@ export default function Navbar() {
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            component={Link} // Use Link component here
+            to="/" // Link to your home page
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -111,16 +119,18 @@ export default function Navbar() {
               textDecoration: 'none',
             }}
           >
-            LOGO
+            VARTALAP
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page.name}
+                component={Link}
+                to={page.link}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                {page}
+                {page.name}
               </Button>
             ))}
           </Box>

@@ -1,4 +1,4 @@
-import "../styles/sidebar.css"
+import "../../styles/sidebar.css"
 
 export default function LeftPane() {
 

@@ -3,7 +3,7 @@ import LeftPane from "./LeftPane"
 import RightPane from "./RightPane"
 import Split from "react-split"
 
-export default function PageContent() {
+export default function ChatPage() {
     return (
         <main>
             <Split 

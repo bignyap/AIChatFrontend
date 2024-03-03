@@ -1,6 +1,6 @@
-import "../styles/rightpane.css"
+import "../../styles/rightpane.css"
 import ModelSeletor from "./ModelSelector"
-import MultiLineTextField from "./TextField"
+import MultiLineTextField from "../../components/TextField"
 
 export default function RightPane() {
     
