@@ -1,7 +1,6 @@
 import "../../styles/sidebar.css"
 
-export default function LeftPane() {
-
+export default function LeftPane(props) {
     return (
         <section className="pane sidebar">
             <div className="sidebar--header">
@@ -9,20 +8,18 @@ export default function LeftPane() {
                 <button className="new-note">+</button>
             </div>
             <div>
-                <ThreadTitle />
+                <ThreadTitle items={props.items} />
             </div>
         </section>
     )
 }
 
-function ThreadTitle() {
-
-    const numNotes = [...Array(15).keys()]
+function ThreadTitle(props) {
 
     return (
-        numNotes.map((currNote) => 
+        props.items.map((currThread) => 
             <div className="title">
-                <h4 className="text-snippet">{`Thread ${currNote+1}`}</h4>
+                <h4 className="text-snippet">{currThread[3]}</h4>
                 <button className="delete-btn">
                     <i className="gg-trash trash-icon"></i>
                 </button>

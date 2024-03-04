@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { Link } from 'react-router-dom'; // Import Link
+import { Link, Outlet } from 'react-router-dom'; // Import Link
 
 const pages = [
   { name: 'Chat', link: 'chat' },
@@ -41,6 +41,7 @@ export default function Navbar() {
   };
 
   return (
+    <>
     <AppBar position="static">
       <Container maxWidth="100%">
         <Toolbar disableGutters>
@@ -167,5 +168,7 @@ export default function Navbar() {
         </Toolbar>
       </Container>
     </AppBar>
+    <Outlet />
+    </>
   );
 }
