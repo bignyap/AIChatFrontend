@@ -83,6 +83,18 @@
     font-family: 'monospace';
 }
 
+.text-snippet-selected {
+    padding-inline: 15px;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1rem;
+    color: #c22648;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'monospace';
+}
+
 .split {
     display: flex;
 }

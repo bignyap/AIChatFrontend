@@ -35,7 +35,6 @@ async function postData(
 async function getData(url = "") {
   try {
     const token = await userLogin();
-    console.log(token);
 
     const response = await fetch(url, {
       method: 'GET',
@@ -60,7 +59,6 @@ async function getData(url = "") {
 async function deleteData(url = "") {
   try {
     const token = await userLogin();
-    console.log(token);
 
     const response = await fetch(url, {
       method: 'DELETE',
@@ -129,16 +127,34 @@ export async function getChatThreads() {
 }
 
 export async function deleteThread(threadID) {
-  const baseUrl = "http://localhost:8003/thread/delete_chat_thread"
 
+  const baseUrl = "http://localhost:8003/thread/delete_chat_thread"
   const params = new URLSearchParams();
   params.append('thread_id', threadID.toString())
-
   const finalUrl = `${baseUrl}?${params.toString()}`
 
   try {
     const response = await deleteData(finalUrl);
     return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getThreadMessages(threadID) {
+  try {
+    const token = await userLogin();
+
+    const baseUrl = "http://localhost:8003/chat/get_chat_messages"
+    const params = new URLSearchParams();
+    params.append('thread_id', threadID.toString())
+    const finalUrl = `${baseUrl}?${params.toString()}`
+
+    return await postData(finalUrl, {},
+      {
+        'Authorization': 'Bearer ' + token.access_token
+      }
+    )
   } catch (error) {
     throw error;
   }

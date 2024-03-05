@@ -1,18 +1,78 @@
-import "../../styles/rightpane.css"
-import ModelSeletor from "./ModelSelector"
+import React, {useState, useEffect} from "react"
+import ModelSelector from "./ModelSelector"
 import MultiLineTextField from "../../components/TextField"
+import "../../styles/rightpane.css"
+import { getThreadMessages } from "../../libraries/api"
 
-export default function RightPane() {
-    
+export default function RightPane(props) {
+
     return (
         <div className="right--pane">
-            <ChatOptionPane />
-            <ChatPane />
+            {/* <ChatOptionPane /> */}
+            <ChatPane
+                currThread={props.currThread}
+            />
         </div>
     )
     
 }
 
+function ChatPane(props) {
+    return (
+        <section className="chat--pane">
+            <ChatHistory
+                currThread={props.currThread}
+            />
+            <UserMessage />
+        </section>
+    )
+}
+
+
+function ChatHistory(props) {
+
+    const [contents, setContents] = useState([]);
+
+    useEffect(() => {
+        const fetchThreadMessages = async () => {
+            if (props.currThread) { // Check if currThread is defined
+                const messages = await getThreadMessages(props.currThread);
+                setContents(messages);
+            } else {
+                setContents([]);
+            }
+        };
+    
+        fetchThreadMessages();
+    }, [props.currThread]);    
+
+    return (
+        <div className="chat--history--wrapper">
+            <section className="chat--history">
+                {contents.map((content, index) => <ChatMessage key={index} content={content} />)}
+            </section>
+        </div>
+    )
+}
+
+
+function ChatMessage(prop) {
+    return (
+        <div className="chat--message">
+            <div className="role--message">{prop.content.role === "user" ? "User" : "Assistant"}</div>
+            <div className="data--message">{prop.content.message}</div>
+        </div>
+    )
+}
+
+
+function UserMessage() {
+    return (
+        <section className="user--input">
+            <MultiLineTextField />
+        </section>
+    )
+}
 
 function ChatOptionPane() {
     const models = [
@@ -50,68 +110,13 @@ function ChatOptionPane() {
     return (
         <section className="chat--option--pane">
             <h4>Model</h4>
-            <ModelSeletor
+            <ModelSelector
                 models = {models}
             />
             <h4>Prompt</h4>
-            <ModelSeletor
+            <ModelSelector
                 models = {prompts}
             />
-        </section>
-    )
-}
-
-function ChatPane() {
-    return (
-        <section className="chat--pane">
-            <ChatHistroy />
-            <UserMessage />
-        </section>
-    )
-}
-
-
-function ChatHistroy() {
-
-    const contents = [
-        {
-            "message_id": 1,
-            "thread_id": 1,
-            "role": "user",
-            "message": "Somzvcjdvj jshgcyau ydyadkcv ssdfd ugfyufiyaf gifdfgdsifiuds giudfbdgdiufgud afgdgfiafgoubadfugo aufiusdgfiudsgf iauGDFIUAFL"
-        },
-        {
-            "message_id": 2,
-            "thread_id": 1,
-            "role": "assistant",
-            "message": "Somzvcjdvj jshgcyau ydyadkcv ssdfd ugfyufiyaf gifdfgdsifiuds giudfbdgdiufgud"
-        }
-    ]
-
-    return (
-        <div className="chat--history--wrapper">
-            <section className="chat--history">
-                {contents.map((content) => <ChatMessage content={content}/>)}
-            </section>
-        </div>
-    )
-}
-
-
-function ChatMessage(prop) {
-    return (
-        <div className="chat--message">
-            <div className="role--message">{prop.content.role === "user" ? "User" : "Assistant"}</div>
-            <div className="data--message">{prop.content.message}</div>
-        </div>
-    )
-}
-
-
-function UserMessage() {
-    return (
-        <section className="user--input">
-            <MultiLineTextField />
         </section>
     )
 }

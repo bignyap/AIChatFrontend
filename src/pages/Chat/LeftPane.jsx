@@ -11,7 +11,7 @@ export default function LeftPane(props) {
         const name = `New Thread ${currentDateISO}`;
         const threadId = await createThread(name);
         setThreads(prevThreads => [[threadId, 1, currentDateISO, name], ...prevThreads]);
-    }
+    };
 
     async function handleDeleteThread(threadId) {
         try{
@@ -20,7 +20,7 @@ export default function LeftPane(props) {
             throw error;
         }
         setThreads(prevThreads => prevThreads.filter(thread => thread[0] !== threadId));
-    }
+    };
 
     return (
         <section className="pane sidebar">
@@ -29,7 +29,12 @@ export default function LeftPane(props) {
                 <button className="new-note" onClick={addNewThread}>+</button>
             </div>
             <div>
-                <ThreadTitle items={threads} onDeleteThread={handleDeleteThread} />
+                <ThreadTitle 
+                    items={threads} 
+                    onDeleteThread={handleDeleteThread} 
+                    onSelectThread={props.onSelectThread}
+                    currThread={props.currThread} 
+                />
             </div>
         </section>
     )
@@ -37,15 +42,15 @@ export default function LeftPane(props) {
 
 function ThreadTitle(props) {
 
-    const handleDeleteClick = (threadId) => {
-        props.onDeleteThread(threadId);
-    };
-
     return (
         props.items.map((currThread) => (
             <div key={currThread[0]} className="title">
-                <h4 className="text-snippet">{currThread[3]}</h4>
-                <button className="delete-btn" onClick={() => handleDeleteClick(currThread[0])}>
+                {
+                    props.currThread === currThread[0] 
+                    ? <h4 className="text-snippet-selected" onClick={() => props.onSelectThread(currThread[0])}>{currThread[3]}</h4>
+                    : <h4 className="text-snippet" onClick={() => props.onSelectThread(currThread[0])}>{currThread[3]}</h4>
+                }
+                <button className="delete-btn" onClick={() => props.onDeleteThread(currThread[0])}>
                     <i className="gg-trash trash-icon"></i>
                 </button>
             </div>
