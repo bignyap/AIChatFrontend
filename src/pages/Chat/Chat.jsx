@@ -15,7 +15,7 @@ import { getChatThreads } from "../../libraries/api"
 
 
 export function loader() {
-    return defer({ ln: getChatThreads() })
+    return defer({ threads: getChatThreads() })
 }
 
 export default function ChatPage() {
@@ -24,18 +24,20 @@ export default function ChatPage() {
 
     return (
         <main>
-            <Split 
-                sizes={[20, 80]} 
-                direction="horizontal" 
-                className="split"
-            >
-                <React.Suspense fallback={<h2>Authenticating...</h2>}>
-                    <Await resolve={dataPromise.ln}>
-                        {(resolvedReviews) => <LeftPane items={resolvedReviews} />}
-                    </Await>
-                </React.Suspense>
-                <RightPane />
-            </Split>
+            <React.Suspense fallback={""}>
+                <Await resolve={dataPromise.threads}>
+                    {(resolvedThreds) => 
+                        <Split 
+                            sizes={[20, 80]} 
+                            direction="horizontal" 
+                            className="split"
+                        >
+                            <LeftPane items={resolvedThreds} />
+                            <RightPane />
+                        </Split>
+                    }
+                </Await>
+            </React.Suspense>
         </main>
     )
 }
