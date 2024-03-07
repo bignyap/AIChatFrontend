@@ -1,35 +1,19 @@
 import React, {useState, useEffect} from "react"
 import ModelSelector from "./ModelSelector"
 import MultiLineTextField from "../../components/TextField"
-import "../../styles/rightpane.css"
-import { getThreadMessages } from "../../libraries/api"
+import Box from '@mui/material/Box';
+import SendButton from "../../components/SendButton"
+import FixedBottom from "../../components/FixedBottom"
+import "../../styles/RightPane.css"
+import { getThreadMessages, createThreadMessages } from "../../libraries/api"
+import CodeHighlighter from "../../components/CodeHighlighter"
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItem from '@mui/material/ListItem';
+import Avatar from '@mui/material/Avatar';
 
 export default function RightPane(props) {
-
-    return (
-        <div className="right--pane">
-            {/* <ChatOptionPane /> */}
-            <ChatPane
-                currThread={props.currThread}
-            />
-        </div>
-    )
-    
-}
-
-function ChatPane(props) {
-    return (
-        <section className="chat--pane">
-            <ChatHistory
-                currThread={props.currThread}
-            />
-            <UserMessage />
-        </section>
-    )
-}
-
-
-function ChatHistory(props) {
 
     const [contents, setContents] = useState([]);
 
@@ -44,33 +28,148 @@ function ChatHistory(props) {
         };
     
         fetchThreadMessages();
-    }, [props.currThread]);    
+    }, [props.currThread]);
+
+    async function handleCreateThread(message) {
+        setContents(prevThreads => 
+            [...prevThreads, 
+                {
+                    "message": message,
+                    "role": "user"
+                }
+            ]
+        );
+        let response = "";
+        try{
+            response = await createThreadMessages(props.currThread, message)
+        } catch (error) {
+            throw error;
+        }
+        console.log(response)
+        setContents(prevThreads => 
+            [...prevThreads, 
+                {
+                    "message": response,
+                    "role": "assistant"
+                }
+            ]
+        );
+    };
 
     return (
-        <div className="chat--history--wrapper">
-            <section className="chat--history">
-                {contents.map((content, index) => <ChatMessage key={index} content={content} />)}
-            </section>
-        </div>
+        <FixedBottom 
+            top={
+                <div className="chat--history">
+                    {contents.map((content) => 
+                        <ChatMessage content={content} />
+                    )}
+                </div>
+            }
+            bottom={
+                <UserMessage 
+                    handleCreateThread={handleCreateThread}
+                />
+            }
+        />
     )
 }
 
 
-function ChatMessage(prop) {
+function ChatMessage (props) {
     return (
-        <div className="chat--message">
-            <div className="role--message">{prop.content.role === "user" ? "User" : "Assistant"}</div>
-            <div className="data--message">{prop.content.message}</div>
-        </div>
+        <ListItem alignItems="flex-start">
+            <ListItemAvatar>
+                <Avatar 
+                    alt={props.content.role === "user" ? "You" : "AI"} 
+                    src="/static/images/avatar/2.jpg" 
+                />
+            </ListItemAvatar>
+            <ListItemText 
+                primary={
+                    <Typography
+                        sx={{ display: 'inline' }}
+                        component="span"
+                        variant="body1"
+                        color="black"
+                        style={{fontWeight: 'bold'}}
+                    >
+                        {props.content.role === "user" ? "You" : "Assistant"}
+                    </Typography> 
+                } 
+                secondary={
+                    <Typography
+                        sx={{ display: 'inline' }}
+                        component="span"
+                        variant="subtitle1"
+                        color="black"
+                    >
+                        {<ChatHighlighter text={props.content.message} />}
+                    </Typography> 
+                }
+            />
+        </ListItem>
     )
 }
 
 
-function UserMessage() {
+function ChatHighlighter (prop) {
+   // Regular expression to match code blocks wrapped in triple backticks
+  const codeBlockRegex = /```([a-zA-Z]*)\n([\s\S]*?)\n```/gm;
+
+  // Split the text into code blocks and regular text
+  const parts = prop.text.split(codeBlockRegex);
+
+  // Process the parts to render code blocks and regular text
+  const elements = parts.map((part, index) => {
+    if (index % 3 === 0) {
+      // Regular text
+      return <span key={index}>{part}</span>;
+    } else if (index % 3 === 1) {
+      // Language name
+      return null;
+    } else {
+      // Code content
+      return <CodeHighlighter key={index} code={part} language={parts[index - 1]} />;
+    }
+  });
+
+  return <div>{elements}</div>;
+}
+
+
+function UserMessage(props) {
+    const [textInput, setTextInput] = useState('');
+    
+    const handleTextInputChange = event => {
+        setTextInput(event.target.value);
+    };
+
+    async function handleChatSubmit () {
+        setTextInput('')
+        await props.handleCreateThread(textInput);
+    };
+
     return (
-        <section className="user--input">
-            <MultiLineTextField />
-        </section>
+        <div className="input--area">
+            <Box
+                sx={{
+                    width: '100%',
+                    maxWidth: '100%',
+                }}
+                >
+                <MultiLineTextField 
+                    fullWidth 
+                    label='Ask your questions'
+                    id="fullWidth"
+                    placeholder='Ask your questions'
+                    value= {textInput}
+                    onChange= {handleTextInputChange}
+                />
+            </Box>
+            <SendButton 
+                onClick={handleChatSubmit}
+            />
+        </div>
     )
 }
 

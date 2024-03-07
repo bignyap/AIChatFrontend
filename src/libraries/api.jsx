@@ -159,3 +159,33 @@ export async function getThreadMessages(threadID) {
     throw error;
   }
 }
+
+export async function createThreadMessages(threadID, userMessage) {
+  try {
+    const token = await userLogin();
+
+    const baseUrl = "http://localhost:8003/chat/create_chat_message"
+    const params = new URLSearchParams();
+    params.append('thread_id', threadID.toString())
+    params.append('user_message', userMessage.toString())
+    const finalUrl = `${baseUrl}?${params.toString()}`
+
+    const response = await fetch(finalUrl, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer ' + token.access_token
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    return response.text();
+  } catch (error) {
+    console.error('There was a problem with the fetch operation:', error);
+    throw error; // Propagate the error
+  }
+}

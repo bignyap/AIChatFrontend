@@ -1,5 +1,4 @@
 import React from "react"
-import Split from "react-split"
 import {
     useLoaderData,
     defer,
@@ -10,6 +9,8 @@ import LeftPane from "./LeftPane"
 import RightPane from "./RightPane"
 
 import { getChatThreads } from "../../libraries/api"
+
+import ClippedDrawer from "../../components/ClippedDrawer"
 
 
 export function loader() {
@@ -27,27 +28,25 @@ export default function ChatPage() {
     }
 
     return (
-        <main>
-            <React.Suspense fallback={""}>
+        <React.Suspense fallback={""}>
                 <Await resolve={dataPromise.threads}>
                     {(resolvedThreds) => 
-                        <Split 
-                            sizes={[20, 80]} 
-                            direction="horizontal" 
-                            className="split"
-                        >
-                            <LeftPane 
-                                items={resolvedThreds} 
-                                onSelectThread={handleCurrentThread} 
+                        <ClippedDrawer 
+                            left={
+                                <LeftPane 
+                                    items={resolvedThreds} 
+                                    onSelectThread={handleCurrentThread} 
+                                    currThread={currThread} 
+                                />
+                            }
+                            right = {
+                                <RightPane 
                                 currThread={currThread} 
                             />
-                            <RightPane 
-                                currThread={currThread} 
-                            />
-                        </Split>
+                            }
+                        />
                     }
                 </Await>
             </React.Suspense>
-        </main>
     )
 }

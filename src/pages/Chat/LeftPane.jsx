@@ -1,6 +1,9 @@
 import React from 'react';
-import "../../styles/sidebar.css";
+import "../../styles/LeftPane.css";
+import AddIcon from '@mui/icons-material/Add';
+import ThreadListItem from "../../components/ListItem"
 import { createThread, deleteThread } from "../../libraries/api";
+import Button from '@mui/material/Button';
 
 export default function LeftPane(props) {
 
@@ -23,37 +26,20 @@ export default function LeftPane(props) {
     };
 
     return (
-        <section className="pane sidebar">
+        <div className="left--pane">
             <div className="sidebar--header">
-                <h3>Chat History</h3>
-                <button className="new-note" onClick={addNewThread}>+</button>
+                <Button variant="contained" endIcon={<AddIcon />} onClick={addNewThread} fullWidth>
+                    New Chat
+                </Button>
             </div>
             <div>
-                <ThreadTitle 
+                <ThreadListItem 
                     items={threads} 
                     onDeleteThread={handleDeleteThread} 
                     onSelectThread={props.onSelectThread}
-                    currThread={props.currThread} 
+                    currThread={props.currThread}  
                 />
             </div>
-        </section>
+        </div>
     )
-}
-
-function ThreadTitle(props) {
-
-    return (
-        props.items.map((currThread) => (
-            <div key={currThread[0]} className="title">
-                {
-                    props.currThread === currThread[0] 
-                    ? <h4 className="text-snippet-selected" onClick={() => props.onSelectThread(currThread[0])}>{currThread[3]}</h4>
-                    : <h4 className="text-snippet" onClick={() => props.onSelectThread(currThread[0])}>{currThread[3]}</h4>
-                }
-                <button className="delete-btn" onClick={() => props.onDeleteThread(currThread[0])}>
-                    <i className="gg-trash trash-icon"></i>
-                </button>
-            </div>
-        )
-    ))
 }

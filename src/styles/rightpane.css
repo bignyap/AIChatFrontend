@@ -3,42 +3,9 @@
     flex-direction: column;
     align-content: flex-start;
     justify-content: flex-start;
-}
-
-.chat--option--pane {
-    display: flex;
-    justify-content: space-evenly;
-
-    padding-top: 10px;
-    padding-bottom: 10px;
+    height: 100%;
     padding-left: 10px;
     padding-right: 10px;
-}
-
-.chat--option--pane h4 {
-    font-family: 'monospace';
-    font-weight: bold;
-    font-size: 16px;
-}
-
-.chat--pane {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    align-content: flex-start;
-    justify-content: flex-start;
-
-    width: 95%; 
-
-    padding-left: 50px;
-    padding-right: 50px;
-}
-
-.chat--history--wrapper {
-    height: 75vh;
-    width: 100%;
-    margin-top: 5px;
-    margin-bottom: 5px;
 }
 
 .chat--history {
@@ -46,13 +13,10 @@
     flex-direction: column;
     align-items: flex-start;
     align-content: flex-start;
-    justify-content: flex-start;
-}
-
-.user--input {
-    margin: auto;
-    height: 5vh;
-    width: 100%;
+    min-height: 95%;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0px 50px 0px 50px;
 }
 
 .chat--message {
@@ -90,3 +54,29 @@
     font-size: 14px;
     align-items: left;
 }
+
+.input--area {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+    flex-shrink: 0; /* This will prevent the user input area from shrinking */
+    height: 50px; /* Set the height of the input area to 50px */
+}
+
+.chat--option--pane {
+    display: flex;
+    justify-content: space-evenly;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.chat--option--pane h4 {
+    font-family: 'monospace';
+    font-weight: bold;
+    font-size: 16px;
+}
+

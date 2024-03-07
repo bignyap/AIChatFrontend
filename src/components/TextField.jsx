@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
-export default function MultiLineTextField() {
+export default function MultiLineTextField(props) {
   return (
     <Box
       component="form"
@@ -12,11 +12,12 @@ export default function MultiLineTextField() {
       autoComplete="off"
     >
         <TextField
-            id="outlined-multiline-static"
-            label="Ask your question"
-            multiline
-            fullWidth
-            defaultValue=""
+            fullWidth 
+            label={props.label}
+            id={props.id}
+            placeholder={props.placeholder}
+            value= {props.value}
+            onChange= {props.onChange}
         />
     </Box>
   );
