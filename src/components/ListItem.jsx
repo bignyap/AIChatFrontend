@@ -19,16 +19,15 @@ export default function ThreadListItem(props) {
               <IconButton 
                 edge="end" aria-label="comments" 
                 onClick={() => {
-                  console.log(234); // Check if onClick is triggered
-                  props.onDeleteThread(value[0]);
+                  props.onDeleteThread(value["id"]);
                 }}
               >
                 <DeleteIcon />
               </IconButton>
             }
           >
-            <ListItemButton selected={value[0] === props.currThread} onClick={() => props.onSelectThread(value[0])}>
-              <ListItemText id={labelId} primary={value[3]} />
+            <ListItemButton selected={value["id"] === props.currThread} onClick={() => props.onSelectThread(value["id"])}>
+              <ListItemText id={labelId} primary={value["name"]} />
             </ListItemButton>
           </ListItem>
         );
@@ -36,6 +35,3 @@ export default function ThreadListItem(props) {
     </List>
   );
 }
-
-
-// sx={{backgroundColor: value[0] === props.currThread? 'red': 'black'}}

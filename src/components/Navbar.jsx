@@ -15,13 +15,14 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { Link, Outlet } from 'react-router-dom'; // Import Link
 
 import "../styles/LeftPane.css"
+import UserService from '../services/UserService';
 
 const pages = [
   { name: 'Chat', link: 'chat' },
   { name: 'Utility', link: 'utility' },
   { name: 'Contact', link: 'contact' }
 ];
-const settings = ['Profile', 'Logout'];
+const settings = ['Logout'];
 
 export default function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -40,6 +41,10 @@ export default function Navbar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = () => {
+    UserService.doLogout();
   };
 
   return (
@@ -141,7 +146,7 @@ export default function Navbar() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar alt={UserService.getUsername()} src="/static/images/avatar/2.jpg" />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -161,7 +166,7 @@ export default function Navbar() {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <MenuItem key={setting} onClick={() => { handleCloseUserMenu(); handleLogout(); }}>
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ))}

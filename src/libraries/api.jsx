@@ -1,30 +1,51 @@
+import UserService from '../services/UserService';
+import api_paths from './paths';
+
+import config from "../config"
+
+function getChatServicePaths (pathName) {
+  return config.chatServiceUrl + api_paths["chatService"][pathName]
+}
+
 const defaultHeaders = {
   'Accept': 'application/json',
   'Content-Type': 'application/x-www-form-urlencoded'
 }
 
+async function headerWithToken(headers = {}, includeDefaultHeader = true) {
+  // Check if user is logged in and add token to headers if available
+  if (UserService.isLoggedIn()) {
+    const token = await UserService.getToken();
+    if (includeDefaultHeader) {
+      return { ...defaultHeaders, ...headers, 'Authorization': `Bearer ${token}` };
+    } else {
+      return { ...headers, 'Authorization': `Bearer ${token}` };
+    }
+  } else {
+    await UserService.doLogin();
+  }
+}
+
+
 async function postData(
-  url = "", data = {}, 
-  headers = {}
+  url, data = {}, 
+  headers = {}, includeDefaultHeader = true
 ) {
-  const finalHeader = { ...defaultHeaders, ...headers };
+  const reqHeaders = await headerWithToken(headers, includeDefaultHeader);
   const requestOptions = {
     method: 'POST', 
-    headers: finalHeader,
+    headers: reqHeaders,
     mode: "cors",
     cache: "no-cache",
     referrerPolicy: "no-referrer",
   };
-
-  Object.keys(data).length > 0 ? requestOptions.body = new URLSearchParams(data): requestOptions.body = ""
-  
+  // Convert data to URLSearchParams if provided
+  Object.keys(data).length > 0 ? requestOptions.body = new URLSearchParams(data) : requestOptions.body = "";
   try {
     const response = await fetch(url, requestOptions);
-
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-
     return response.json();
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
@@ -32,22 +53,17 @@ async function postData(
   }
 }
 
-async function getData(url = "") {
-  try {
-    const token = await userLogin();
 
+async function getData(url, headers = {}, includeDefaultHeader = true) {
+  try {
+    const reqHeaders = await headerWithToken(headers, includeDefaultHeader);
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + token.access_token
-      }
+      headers: reqHeaders
     });
-
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-
     return response.json();
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
@@ -56,61 +72,30 @@ async function getData(url = "") {
 }
 
 
-async function deleteData(url = "") {
+async function deleteData(url, headers = {}, includeDefaultHeader = true) {
   try {
-    const token = await userLogin();
-
+    const reqHeaders = await headerWithToken(headers, includeDefaultHeader);
     const response = await fetch(url, {
       method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + token.access_token
-      }
+      headers: reqHeaders
     });
-
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-
     return response.json();
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
     throw error; // Propagate the error
-  }
-}
-
-export async function userLogin() {
-  try {
-    const data = await postData(
-      "http://localhost:8001/auth/login",
-      {
-        'username': 'llm',
-        'password': 'llm'
-      },
-      {}
-    );
-    return data;
-  } catch (error) {
-    throw error;
   }
 }
 
 export async function createThread(name = "New Thread") {
   try {
-    const token = await userLogin();
-
-    const baseUrl = "http://localhost:8003/thread/create_chat_thread"
-
+    const url = getChatServicePaths("createThread")
     const params = new URLSearchParams();
     params.append('name', name)
-
-    const finalUrl = `${baseUrl}?${params.toString()}`
-
-    return await postData(finalUrl, {},
-      {
-        'Authorization': 'Bearer ' + token.access_token
-      }
-    )
+    const finalUrl = `${url}?${params.toString()}`
+    return await postData(finalUrl)
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
     throw error; // Propagate the error
@@ -119,7 +104,8 @@ export async function createThread(name = "New Thread") {
 
 export async function getChatThreads() {
   try {
-    const response = await getData('http://localhost:8003/thread/list_chat_thread');
+    const url = getChatServicePaths("listThreads")
+    const response = await getData(url);
     return response;
   } catch (error) {
     throw error;
@@ -127,13 +113,11 @@ export async function getChatThreads() {
 }
 
 export async function deleteThread(threadID) {
-
-  const baseUrl = "http://localhost:8003/thread/delete_chat_thread"
-  const params = new URLSearchParams();
-  params.append('thread_id', threadID.toString())
-  const finalUrl = `${baseUrl}?${params.toString()}`
-
   try {
+    const url = getChatServicePaths("deleteThread")
+    const params = new URLSearchParams();
+    params.append('thread_id', threadID.toString())
+    const finalUrl = `${url}?${params.toString()}`
     const response = await deleteData(finalUrl);
     return response;
   } catch (error) {
@@ -143,47 +127,26 @@ export async function deleteThread(threadID) {
 
 export async function getThreadMessages(threadID) {
   try {
-    const token = await userLogin();
-
-    const baseUrl = "http://localhost:8003/chat/get_chat_messages"
+    const url = getChatServicePaths("getMessages")
     const params = new URLSearchParams();
     params.append('thread_id', threadID.toString())
-    const finalUrl = `${baseUrl}?${params.toString()}`
-
-    return await postData(finalUrl, {},
-      {
-        'Authorization': 'Bearer ' + token.access_token
-      }
-    )
+    const finalUrl = `${url}?${params.toString()}`
+    return await getData(finalUrl)
   } catch (error) {
+    console.error('There was a problem with the fetch operation:', error);
     throw error;
   }
 }
 
 export async function createThreadMessages(threadID, userMessage) {
   try {
-    const token = await userLogin();
-
-    const baseUrl = "http://localhost:8003/chat/create_chat_message"
+    const url = getChatServicePaths("createMessage")
     const params = new URLSearchParams();
     params.append('thread_id', threadID.toString())
     params.append('user_message', userMessage.toString())
-    const finalUrl = `${baseUrl}?${params.toString()}`
-
-    const response = await fetch(finalUrl, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Bearer ' + token.access_token
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    return response.text();
+    const finalUrl = `${url}?${params.toString()}`
+    const response = await postData(finalUrl);
+    return response;
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
     throw error; // Propagate the error

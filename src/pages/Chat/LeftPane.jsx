@@ -13,7 +13,15 @@ export default function LeftPane(props) {
         const currentDateISO = new Date().toISOString();
         const name = `New Thread ${currentDateISO}`;
         const threadId = await createThread(name);
-        setThreads(prevThreads => [[threadId, 1, currentDateISO, name], ...prevThreads]);
+        setThreads(prevThreads => [
+            {
+                "id": threadId, 
+                "creator_id": 2, 
+                "date_created": currentDateISO, 
+                "name": name
+            }, 
+            ...prevThreads
+        ]);
     };
 
     async function handleDeleteThread(threadId) {
@@ -22,7 +30,7 @@ export default function LeftPane(props) {
         } catch (error) {
             throw error;
         }
-        setThreads(prevThreads => prevThreads.filter(thread => thread[0] !== threadId));
+        setThreads(prevThreads => prevThreads.filter(thread => thread["id"] !== threadId));
     };
 
     return (

@@ -45,7 +45,6 @@ export default function RightPane(props) {
         } catch (error) {
             throw error;
         }
-        console.log(response)
         setContents(prevThreads => 
             [...prevThreads, 
                 {

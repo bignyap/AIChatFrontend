@@ -24,7 +24,7 @@ export default function ChatPage() {
     const [currThread, setCurrThread] = React.useState(null)
 
     async function handleCurrentThread(threadId) {
-        setCurrThread((prvThreadId) => prvThreadId === threadId ? prvThreadId : threadId);
+        setCurrThread(threadId);
     }
 
     return (
@@ -34,7 +34,7 @@ export default function ChatPage() {
                         <ClippedDrawer 
                             left={
                                 <LeftPane 
-                                    items={resolvedThreds} 
+                                    items={resolvedThreds.sort((a, b) => b.id - a.id)} 
                                     onSelectThread={handleCurrentThread} 
                                     currThread={currThread} 
                                 />
