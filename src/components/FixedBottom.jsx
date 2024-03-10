@@ -6,10 +6,11 @@ export default function FixedBottom(props) {
   const scrollRef = useRef(null);
 
   useEffect(() => {
+    // Scroll to the bottom when the top content changes
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [props.top]);
+  }, [props.top]); // Re-run effect when top content changes
 
   return (
     <Box
@@ -19,10 +20,10 @@ export default function FixedBottom(props) {
         justifyContent: 'center',
         backgroundColor: 'white'
       }}
-      ref={scrollRef}
+      ref={scrollRef} // Set ref for scrolling
     >
       <CssBaseline />
-      {props.top}
+      {props.top} {/* Render top content */}
       <div
         style={{
           position: 'fixed',
@@ -36,7 +37,7 @@ export default function FixedBottom(props) {
           justifyContent: 'center'
         }}
       >
-        {props.bottom}
+        {props.bottom} {/* Render bottom content */}
       </div>
     </Box>
   );

@@ -22,6 +22,7 @@ export default function LeftPane(props) {
             }, 
             ...prevThreads
         ]);
+        props.onSelectThread(threadId);
     };
 
     async function handleDeleteThread(threadId) {

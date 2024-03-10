@@ -28,19 +28,18 @@ async function headerWithToken(headers = {}, includeDefaultHeader = true) {
 
 
 async function postData(
-  url, data = {}, 
-  headers = {}, includeDefaultHeader = true
+  url, data = {}, headers = {}, 
+  includeDefaultHeader = true
 ) {
   const reqHeaders = await headerWithToken(headers, includeDefaultHeader);
   const requestOptions = {
-    method: 'POST', 
+    method: 'POST',
     headers: reqHeaders,
     mode: "cors",
     cache: "no-cache",
     referrerPolicy: "no-referrer",
+    body: new URLSearchParams(data) // Always use URLSearchParams for form data
   };
-  // Convert data to URLSearchParams if provided
-  Object.keys(data).length > 0 ? requestOptions.body = new URLSearchParams(data) : requestOptions.body = "";
   try {
     const response = await fetch(url, requestOptions);
     if (!response.ok) {
@@ -91,11 +90,9 @@ async function deleteData(url, headers = {}, includeDefaultHeader = true) {
 
 export async function createThread(name = "New Thread") {
   try {
-    const url = getChatServicePaths("createThread")
-    const params = new URLSearchParams();
-    params.append('name', name)
-    const finalUrl = `${url}?${params.toString()}`
-    return await postData(finalUrl)
+    const url = getChatServicePaths("createThread");
+    const data = { name: name }; // Form data
+    return await postData(url, data);
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
     throw error; // Propagate the error
@@ -114,24 +111,21 @@ export async function getChatThreads() {
 
 export async function deleteThread(threadID) {
   try {
-    const url = getChatServicePaths("deleteThread")
-    const params = new URLSearchParams();
-    params.append('thread_id', threadID.toString())
-    const finalUrl = `${url}?${params.toString()}`
+    const url = getChatServicePaths("deleteThread");
+    const finalUrl = `${url}/${threadID.toString()}`;
     const response = await deleteData(finalUrl);
     return response;
   } catch (error) {
-    throw error;
+    console.error('There was a problem with the delete operation:', error);
+    throw error; // Propagate the error
   }
 }
 
 export async function getThreadMessages(threadID) {
   try {
-    const url = getChatServicePaths("getMessages")
-    const params = new URLSearchParams();
-    params.append('thread_id', threadID.toString())
-    const finalUrl = `${url}?${params.toString()}`
-    return await getData(finalUrl)
+    const url = getChatServicePaths("getMessages");
+    const finalUrl = `${url}/${threadID.toString()}`;
+    return await getData(finalUrl);
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
     throw error;
@@ -140,12 +134,10 @@ export async function getThreadMessages(threadID) {
 
 export async function createThreadMessages(threadID, userMessage) {
   try {
-    const url = getChatServicePaths("createMessage")
-    const params = new URLSearchParams();
-    params.append('thread_id', threadID.toString())
-    params.append('user_message', userMessage.toString())
-    const finalUrl = `${url}?${params.toString()}`
-    const response = await postData(finalUrl);
+    const url = getChatServicePaths("createMessage");
+    const finalUrl = `${url}/${threadID.toString()}`;
+    const data = { user_message: userMessage.toString() };
+    const response = await postData(finalUrl, data);
     return response;
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);

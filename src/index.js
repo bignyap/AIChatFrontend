@@ -5,5 +5,11 @@ import App from './App';
 import UserService from './services/UserService';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-const renderApp = () => root.render(<App />);
-UserService.initKeycloak(renderApp);
+
+const initApp = () => {
+  const renderApp = () => root.render(<App />);
+  renderApp();
+};
+
+UserService.initKeycloak(initApp);
+

@@ -56,20 +56,22 @@ export default function RightPane(props) {
     };
 
     return (
-        <FixedBottom 
-            top={
-                <div className="chat--history">
-                    {contents.map((content) => 
-                        <ChatMessage content={content} />
-                    )}
-                </div>
-            }
-            bottom={
-                <UserMessage 
-                    handleCreateThread={handleCreateThread}
-                />
-            }
-        />
+        <>{props.currThread && (
+            <FixedBottom 
+                top={
+                    <div className="chat--history">
+                        {contents.map((content, index) => 
+                            <ChatMessage key={index} content={content} />
+                        )}
+                    </div>
+                }
+                bottom={
+                    <UserMessage 
+                        handleCreateThread={handleCreateThread}
+                    />
+                }
+            />
+        )}</>
     )
 }
 
@@ -79,7 +81,7 @@ function ChatMessage (props) {
         <ListItem alignItems="flex-start">
             <ListItemAvatar>
                 <Avatar 
-                    alt={props.content.role === "user" ? "You" : "AI"} 
+                    alt={props.content.role === "user" ? "You" : "Assistant"} 
                     src="/static/images/avatar/2.jpg" 
                 />
             </ListItemAvatar>
@@ -143,8 +145,15 @@ function UserMessage(props) {
         setTextInput(event.target.value);
     };
 
+    const handleKeyPress = event => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent the default Enter key behavior
+            handleChatSubmit();
+        }
+    };
+
     async function handleChatSubmit () {
-        setTextInput('')
+        setTextInput('');
         await props.handleCreateThread(textInput);
     };
 
@@ -155,14 +164,15 @@ function UserMessage(props) {
                     width: '100%',
                     maxWidth: '100%',
                 }}
-                >
+            >
                 <MultiLineTextField 
                     fullWidth 
                     label='Ask your questions'
                     id="fullWidth"
                     placeholder='Ask your questions'
-                    value= {textInput}
-                    onChange= {handleTextInputChange}
+                    value={textInput}
+                    onChange={handleTextInputChange}
+                    onKeyPress={handleKeyPress} // Call handleKeyPress function on key press
                 />
             </Box>
             <SendButton 
@@ -171,6 +181,7 @@ function UserMessage(props) {
         </div>
     )
 }
+
 
 function ChatOptionPane() {
     const models = [
