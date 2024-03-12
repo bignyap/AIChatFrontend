@@ -9,7 +9,7 @@ import {
 import Navbar from './components/Navbar';
 import Error from './components/Error'
 
-import ChatPage, {loader as chatLoader} from './pages/Chat/Chat';
+import ChatPage from './pages/Chat/Chat';
 import UtilityPage from './pages/Utility';
 import ContactPage from './pages/Contact';
 import NotFound from './pages/NotFound';
@@ -20,7 +20,7 @@ const router = createBrowserRouter(createRoutesFromElements(
       path ="chat" 
       element={<ChatPage />} 
       errorElement={<Error />}
-      loader={chatLoader}
+      // loader={chatLoader}
     />
     <Route 
       path="contact" 

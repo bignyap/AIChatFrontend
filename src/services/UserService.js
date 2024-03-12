@@ -3,32 +3,16 @@ import keycloakConfig from "../keycloak";
 
 const _kc = new Keycloak(keycloakConfig);
 
-/**
- * Initializes Keycloak instance and calls the provided callback function if successfully authenticated.
- *
- * @param onAuthenticatedCallback
- */
-const initKeycloak = (onAuthenticatedCallback) => {
-  _kc.init({
-    // onLoad: 'login-required',
-    // pkceMethod: 'S256',
-  })
-    .then((authenticated) => {
-      if (authenticated) {
-        onAuthenticatedCallback();
-      } else {
-        console.log("User not authenticated.");
-        doLogin();
-      }
-    })
-    .catch((error) => {
-      console.error("Error initializing Keycloak:", error);
-      // Handle the error appropriately, such as displaying an error message to the user or redirecting to an error page.
-    });
-};
+async function initKeycloak() {
+  try {
+    await _kc.init({ onLoad: 'login-required' });
+    return true; // Return true if initialization is successful
+  } catch (error) {
+    throw error;
+  }
+}
 
-
-const doLogin = _kc.login.bind(_kc);
+// const doLogin = _kc.login;
 
 const doLogout = _kc.logout;
 
@@ -41,7 +25,7 @@ const isLoggedIn = () => !!_kc.token;
 const updateToken = (successCallback) =>
   _kc.updateToken(5)
     .then(successCallback)
-    .catch(doLogin);
+    .catch(_kc.login());
 
 const getUsername = () => _kc.tokenParsed?.preferred_username;
 
@@ -51,13 +35,13 @@ const requireLogin = (callback) => {
   if (isLoggedIn()) {
     callback();
   } else {
-    doLogin();
+    _kc.login();
   }
 };
 
 const UserService = {
   initKeycloak,
-  doLogin,
+  // doLogin,
   doLogout,
   isLoggedIn,
   getToken,

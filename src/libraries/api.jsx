@@ -13,16 +13,17 @@ const defaultHeaders = {
 }
 
 async function headerWithToken(headers = {}, includeDefaultHeader = true) {
+  const loggedIn = await UserService.isLoggedIn()
   // Check if user is logged in and add token to headers if available
-  if (UserService.isLoggedIn()) {
-    const token = await UserService.getToken();
+  if (loggedIn) {
+    const token = UserService.getToken();
     if (includeDefaultHeader) {
       return { ...defaultHeaders, ...headers, 'Authorization': `Bearer ${token}` };
     } else {
       return { ...headers, 'Authorization': `Bearer ${token}` };
     }
   } else {
-    await UserService.doLogin();
+    await UserService._kc.login();
   }
 }
 

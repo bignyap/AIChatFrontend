@@ -1,52 +1,58 @@
-import React from "react"
-import {
-    useLoaderData,
-    defer,
-    Await,
-} from "react-router-dom"
+import React, { useState, useEffect } from 'react';
+import { getChatThreads } from '../../libraries/api';
+import ClippedDrawer from '../../components/ClippedDrawer';
+import LeftPane from './LeftPane';
+import RightPane from './RightPane';
 
-import LeftPane from "./LeftPane"
-import RightPane from "./RightPane"
+function ChatPage() {
+  const [threads, setThreads] = useState(null);
+  const [currThread, setCurrThread] = useState(null);
+  const [error, setError] = useState(null);
 
-import { getChatThreads } from "../../libraries/api"
-
-import ClippedDrawer from "../../components/ClippedDrawer"
-
-
-export function loader() {
-    return defer({ threads: getChatThreads() })
-}
-
-export default function ChatPage() {
-
-    const dataPromise = useLoaderData()
-
-    const [currThread, setCurrThread] = React.useState(null)
-
-    async function handleCurrentThread(threadId) {
-        setCurrThread(threadId);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const threadsData = await getChatThreads();
+        setThreads(threadsData);
+      } catch (error) {
+        setError(error);
+      }
     }
+    fetchData();
+  }, []);
 
+  function handleCurrentThread(threadId) {
+    setCurrThread(threadId);
+  }
+
+  if (error) {
     return (
-        <React.Suspense fallback={""}>
-                <Await resolve={dataPromise.threads}>
-                    {(resolvedThreds) => 
-                        <ClippedDrawer 
-                            left={
-                                <LeftPane 
-                                    items={resolvedThreds.sort((a, b) => b.id - a.id)} 
-                                    onSelectThread={handleCurrentThread} 
-                                    currThread={currThread} 
-                                />
-                            }
-                            right = {
-                                <RightPane 
-                                currThread={currThread} 
-                            />
-                            }
-                        />
-                    }
-                </Await>
-            </React.Suspense>
-    )
+      <div>
+        <p>Error fetching chat threads: {error.message}</p>
+        {/* Optionally, you can provide a button to retry fetching */}
+        {/* <button onClick={() => fetchData()}>Retry</button> */}
+      </div>
+    );
+  }
+
+  if (!threads) {
+    return <div>Loading chat threads...</div>;
+  }
+
+  return (
+    <React.Suspense fallback="">
+      <ClippedDrawer
+        left={
+          <LeftPane
+            items={threads.sort((a, b) => b.id - a.id)}
+            onSelectThread={handleCurrentThread}
+            currThread={currThread}
+          />
+        }
+        right={<RightPane currThread={currThread} />}
+      />
+    </React.Suspense>
+  );
 }
+
+export default ChatPage;

@@ -50,7 +50,7 @@ export default function Navbar() {
   return (
     <div className='main--content'>
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Container maxWidth="100%" minHeight="100%">
+        <Container maxWidth="100%" minheight="100%">
           <Toolbar disableGutters>
             <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
             <Typography

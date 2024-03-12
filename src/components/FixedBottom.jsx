@@ -1,17 +1,6 @@
-import React, { useRef, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
 
 export default function FixedBottom(props) {
-  const scrollRef = useRef(null);
-
-  useEffect(() => {
-    // Scroll to the bottom when the top content changes
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [props.top]); // Re-run effect when top content changes
-
   return (
     <Box
       sx={{
@@ -20,9 +9,7 @@ export default function FixedBottom(props) {
         justifyContent: 'center',
         backgroundColor: 'white'
       }}
-      ref={scrollRef} // Set ref for scrolling
     >
-      <CssBaseline />
       {props.top} {/* Render top content */}
       <div
         style={{
