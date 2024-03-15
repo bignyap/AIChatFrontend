@@ -16,43 +16,44 @@ import Avatar from '@mui/material/Avatar';
 export default function RightPane(props) {
 
     const [contents, setContents] = useState([]);
+    const [firstByte, setFirstByte] = useState(true);
 
     useEffect(() => {
         const fetchThreadMessages = async () => {
-            if (props.currThread) { // Check if currThread is defined
+            if (props.currThread) {
                 const messages = await getThreadMessages(props.currThread);
                 setContents(messages);
             } else {
                 setContents([]);
             }
         };
-    
+        
         fetchThreadMessages();
     }, [props.currThread]);
 
     async function handleCreateThread(message) {
         setContents(prevThreads => 
-            [...prevThreads, 
-                {
-                    "message": message,
-                    "role": "user"
-                }
-            ]
+            [...prevThreads, {
+                "message": message,
+                "role": "user"
+            }]
         );
-        let response = "";
-        try{
-            response = await createThreadMessages(props.currThread, message)
-        } catch (error) {
-            throw error;
-        }
-        setContents(prevThreads => 
-            [...prevThreads, 
-                {
-                    "message": response,
-                    "role": "assistant"
+
+        const onDataReceived = (message) => {
+            const response = {
+                "message": message.message,
+                "role": 'assistant'
+            }
+            setContents(prevContents => {
+                if (message.firstByte) {
+                    setFirstByte(false);
+                    return [...prevContents, response];
+                } else {
+                    return [...prevContents.slice(0, -1), response];
                 }
-            ]
-        );
+            });
+        };
+        await createThreadMessages(props.currThread, message, onDataReceived);
     };
 
     return (

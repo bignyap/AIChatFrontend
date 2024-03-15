@@ -133,15 +133,51 @@ export async function getThreadMessages(threadID) {
   }
 }
 
-export async function createThreadMessages(threadID, userMessage) {
+
+export async function createThreadMessages(threadID, userMessage, onDataReceived) {
   try {
     const url = getChatServicePaths("createMessage");
     const finalUrl = `${url}/${threadID.toString()}`;
     const data = { user_message: userMessage.toString() };
-    const response = await postData(finalUrl, data);
-    return response;
+    const reqHeaders = await headerWithToken({}, true);
+    const requestOptions = {
+      method: 'POST',
+      headers: reqHeaders,
+      mode: "cors",
+      cache: "no-cache",
+      referrerPolicy: "no-referrer",
+      body: new URLSearchParams(data) // Always use URLSearchParams for form data
+    };
+
+    const response = await fetch(finalUrl, requestOptions);
+
+    const reader = response.body.getReader();
+    let decoder = new TextDecoder();
+    let iter = 1;
+    let finalResponse = {
+      "message": "",
+      "firstByte": true
+    }
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+      
+      finalResponse = {
+        "message": finalResponse.message + decoder.decode(value),
+        "firstByte": (iter === 1)
+      };
+      iter = iter + 1;
+      onDataReceived(finalResponse); // Pass received data to the callback function
+    }
+
+
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
     throw error; // Propagate the error
   }
 }
+

@@ -28,6 +28,7 @@ export default function LeftPane(props) {
     async function handleDeleteThread(threadId) {
         try{
             await deleteThread(threadId)
+            props.onSelectThread(null);
         } catch (error) {
             throw error;
         }

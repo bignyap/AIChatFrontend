@@ -22,7 +22,11 @@ function ChatPage() {
   }, []);
 
   function handleCurrentThread(threadId) {
-    setCurrThread(threadId);
+    if (threadId) {
+      setCurrThread(threadId)
+    } else {
+      setCurrThread(null)
+    };
   }
 
   if (error) {
