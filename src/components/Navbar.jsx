@@ -16,13 +16,14 @@ import { Link, Outlet } from 'react-router-dom'; // Import Link
 
 import "../styles/LeftPane.css"
 import UserService from '../services/UserService';
+import BasicModal from './Modal'
 
 const pages = [
   { name: 'Chat', link: 'chat' },
   { name: 'Utility', link: 'utility' },
   { name: 'Contact', link: 'contact' }
 ];
-const settings = ['Logout'];
+const settings = ['Settings', 'Logout'];
 
 export default function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -41,10 +42,6 @@ export default function Navbar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-  };
-
-  const handleLogout = () => {
-    UserService.doLogout();
   };
 
   return (
@@ -166,7 +163,13 @@ export default function Navbar() {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={() => { handleCloseUserMenu(); handleLogout(); }}>
+                  <MenuItem 
+                    key={setting} 
+                    onClick={() => { 
+                      handleCloseUserMenu(); 
+                      switchSettingAction(setting)
+                    }}
+                  >
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ))}
@@ -178,4 +181,69 @@ export default function Navbar() {
       <Outlet />
     </div>
   );
+}
+
+
+function switchSettingAction(setting) {
+  if (setting === 'Logout') {
+    UserService.doLogout();
+  } else if (setting === 'Settings') {
+    console.log("Opening settings modal...");
+    <BasicModal 
+      content="dfdsffdgf"
+      title="dfdsf"
+      open={true}
+    />
+  }
+}
+
+
+
+function ChatOptionPane() {
+  const models = [
+      {
+          "index": 1,
+          "name": "gpt-3.5-turbo-0125"
+      },
+      {
+          "index": 2,
+          "name": "gpt-3.5-turbo-1106"
+      },
+      {
+          "index": 3,
+          "name": "gpt-4-1106-preview"
+      },
+      {
+          "index": 4,
+          "name": "gpt-4-1106-vision-preview"
+      }
+  ]
+
+  const prompts = [
+      {
+          "index": 1,
+          "name": "Interviewer",
+          "prompt": ""
+      },
+      {
+          "index": 2,
+          "name": "Chat Assistant",
+          "prompt": ""
+      }
+  ]
+
+  return [...prompts, ...models]
+  
+  // return (
+  //     <section className="chat--option--pane">
+  //         <h4>Model</h4>
+  //         <ModelSelector
+  //             models = {models}
+  //         />
+  //         <h4>Prompt</h4>
+  //         <ModelSelector
+  //             models = {prompts}
+  //         />
+  //     </section>
+  // )
 }

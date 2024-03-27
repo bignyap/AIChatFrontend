@@ -62,6 +62,9 @@
     gap: 10px;
     flex-shrink: 0; /* This will prevent the user input area from shrinking */
     height: 50px; /* Set the height of the input area to 50px */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    padding: 10px;
 }
 
 .chat--option--pane {

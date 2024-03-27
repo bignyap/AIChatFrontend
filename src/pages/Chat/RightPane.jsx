@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from "react"
-import ModelSelector from "./ModelSelector"
-import MultiLineTextField from "../../components/TextField"
+// import MultiLineTextField from "../../components/TextField"
 import Box from '@mui/material/Box';
 import SendButton from "../../components/SendButton"
 import FixedBottom from "../../components/FixedBottom"
@@ -12,11 +11,11 @@ import Typography from '@mui/material/Typography';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItem from '@mui/material/ListItem';
 import Avatar from '@mui/material/Avatar';
+import InputBase from '@mui/material/InputBase';
 
 export default function RightPane(props) {
 
     const [contents, setContents] = useState([]);
-    const [firstByte, setFirstByte] = useState(true);
 
     useEffect(() => {
         const fetchThreadMessages = async () => {
@@ -46,7 +45,6 @@ export default function RightPane(props) {
             }
             setContents(prevContents => {
                 if (message.firstByte) {
-                    setFirstByte(false);
                     return [...prevContents, response];
                 } else {
                     return [...prevContents.slice(0, -1), response];
@@ -148,7 +146,7 @@ function UserMessage(props) {
 
     const handleKeyPress = event => {
         if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent the default Enter key behavior
+            event.preventDefault();
             handleChatSubmit();
         }
     };
@@ -162,72 +160,25 @@ function UserMessage(props) {
         <div className="input--area">
             <Box
                 sx={{
-                    width: '100%',
-                    maxWidth: '100%',
+                    width: '90%',
+                    maxWidth: '90%',
                 }}
-            >
-                <MultiLineTextField 
-                    fullWidth 
-                    label='Ask your questions'
-                    id="fullWidth"
+            > 
+                <InputBase
+                    fullWidth
+                    multiline
+                    sx={{ ml: 1, flex: 1 }}
                     placeholder='Ask your questions'
+                    maxRows={6}
                     value={textInput}
                     onChange={handleTextInputChange}
-                    onKeyPress={handleKeyPress} // Call handleKeyPress function on key press
+                    onKeyDown={handleKeyPress}
                 />
             </Box>
             <SendButton 
                 onClick={handleChatSubmit}
             />
         </div>
-    )
-}
-
-
-function ChatOptionPane() {
-    const models = [
-        {
-            "index": 1,
-            "name": "gpt-3.5-turbo-0125"
-        },
-        {
-            "index": 2,
-            "name": "gpt-3.5-turbo-1106"
-        },
-        {
-            "index": 3,
-            "name": "gpt-4-1106-preview"
-        },
-        {
-            "index": 4,
-            "name": "gpt-4-1106-vision-preview"
-        }
-    ]
-
-    const prompts = [
-        {
-            "index": 1,
-            "name": "Interviewer",
-            "prompt": ""
-        },
-        {
-            "index": 2,
-            "name": "Chat Assistant",
-            "prompt": ""
-        }
-    ]
-    
-    return (
-        <section className="chat--option--pane">
-            <h4>Model</h4>
-            <ModelSelector
-                models = {models}
-            />
-            <h4>Prompt</h4>
-            <ModelSelector
-                models = {prompts}
-            />
-        </section>
     )
 }
 
