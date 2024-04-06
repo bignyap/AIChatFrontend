@@ -1,7 +1,5 @@
 import React, {useState, useEffect} from "react"
-// import MultiLineTextField from "../../components/TextField"
 import Box from '@mui/material/Box';
-import SendButton from "../../components/SendButton"
 import FixedBottom from "../../components/FixedBottom"
 import "../../styles/RightPane.css"
 import { getThreadMessages, createThreadMessages } from "../../libraries/api"
@@ -12,6 +10,9 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItem from '@mui/material/ListItem';
 import Avatar from '@mui/material/Avatar';
 import InputBase from '@mui/material/InputBase';
+import InputAdornment from '@mui/material/InputAdornment';
+import SendIcon from '@mui/icons-material/Send';
+import IconButton from '@mui/material/IconButton';
 
 export default function RightPane(props) {
 
@@ -111,6 +112,7 @@ function ChatMessage (props) {
     )
 }
 
+// TODO: Improve this function to handle different cases
 
 function ChatHighlighter (prop) {
    // Regular expression to match code blocks wrapped in triple backticks
@@ -145,7 +147,10 @@ function UserMessage(props) {
     };
 
     const handleKeyPress = event => {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && event.shiftKey) {
+            setTextInput(prevText => prevText + '\n');
+            event.preventDefault();
+        } else if (event.key === 'Enter') {
             event.preventDefault();
             handleChatSubmit();
         }
@@ -157,28 +162,42 @@ function UserMessage(props) {
     };
 
     return (
-        <div className="input--area">
-            <Box
-                sx={{
-                    width: '90%',
-                    maxWidth: '90%',
+        
+        <Box
+            sx={{
+                p: '2px 4px', 
+                display: 'flex', 
+                alignItems: 'center',
+                width: '100%',
+                maxWidth: '100%'
+            }}
+        > 
+            <InputBase
+                fullWidth
+                multiline
+                sx={{ 
+                    ml: 1, 
+                    flex: 1, 
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.4)', 
+                    padding: '10px',
+                    borderRadius: '20px',
                 }}
-            > 
-                <InputBase
-                    fullWidth
-                    multiline
-                    sx={{ ml: 1, flex: 1 }}
-                    placeholder='Ask your questions'
-                    maxRows={6}
-                    value={textInput}
-                    onChange={handleTextInputChange}
-                    onKeyDown={handleKeyPress}
-                />
-            </Box>
-            <SendButton 
-                onClick={handleChatSubmit}
+                placeholder='Ask your questions'
+                maxRows={6}
+                value={textInput}
+                onChange={handleTextInputChange}
+                onKeyDown={handleKeyPress}
+                endAdornment={
+                    <InputAdornment position="end">
+                        <IconButton
+                            onClick={handleChatSubmit}
+                        >
+                            <SendIcon />
+                        </IconButton>
+                    </InputAdornment>
+                }
             />
-        </div>
+        </Box>
     )
 }
 

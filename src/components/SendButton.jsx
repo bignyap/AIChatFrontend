@@ -10,7 +10,7 @@ export default function SendButton(props) {
       sx={{height:'40px'}}
       onClick={props.onClick}
     >
-        Send
+        {props.name}
     </Button>
   );
 }
