@@ -12,6 +12,7 @@ export default function LeftPane(props) {
     async function addNewThread() {
         const currentDateISO = new Date().toISOString();
         const name = `New Thread ${currentDateISO}`;
+        // const name = `Thread ${threads.length + 1}`;
         const threadId = await createThread(name);
         setThreads(prevThreads => [
             {

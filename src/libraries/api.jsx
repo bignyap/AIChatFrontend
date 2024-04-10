@@ -54,6 +54,32 @@ async function postData(
 }
 
 
+async function putData(
+  url, data = {}, headers = {},
+  includeDefaultHeader = true
+) {
+  const reqHeaders = await headerWithToken(headers, includeDefaultHeader);
+  const requestOptions = {
+    method: 'PUT',
+    headers: reqHeaders,
+    mode: "cors",
+    cache: "no-cache",
+    referrerPolicy: "no-referrer",
+    body: new URLSearchParams(data) // Always use URLSearchParams for form data
+  };
+  try {
+    const response = await fetch(url, requestOptions);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('There was a problem with the fetch operation:', error);
+    throw error; // Propagate the error
+  }
+}
+
+
 async function getData(url, headers = {}, includeDefaultHeader = true) {
   try {
     const reqHeaders = await headerWithToken(headers, includeDefaultHeader);
@@ -85,6 +111,27 @@ async function deleteData(url, headers = {}, includeDefaultHeader = true) {
     return response.json();
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
+    throw error; // Propagate the error
+  }
+}
+
+export async function getDefaultChatModel() {
+  try {
+    const url = getChatServicePaths("getDefaultModel")
+    const response = await getData(url);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function updateDefaultChatModel(modelName) {
+  try {
+    const url = getChatServicePaths("updateDefaultModel");
+    const data = { default_model_name: modelName }; // Form data
+    return await putData(url, data);
+  } catch (error) {
+    console.error('There was a problem with updating the chat model:', error);
     throw error; // Propagate the error
   }
 }

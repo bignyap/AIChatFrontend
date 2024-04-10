@@ -12,18 +12,29 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { Link, Outlet } from 'react-router-dom'; // Import Link
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import { Link, Outlet } from 'react-router-dom';
 
 import "../styles/LeftPane.css"
 import UserService from '../services/UserService';
 import BasicModal from './Modal'
+import {updateDefaultChatModel, getDefaultChatModel} from '../libraries/api'
 
 const pages = [
   { name: 'Chat', link: 'chat' },
   { name: 'Utility', link: 'utility' },
   { name: 'Contact', link: 'contact' }
 ];
-const settings = ['Settings', 'Logout'];
+const settings = ['Logout'];
+
+const options = [
+  'gpt-3.5-turbo-0125',
+  'gpt-3.5-turbo-1106',
+  'gpt-4-turbo-preview',
+  'gpt-4-1106-preview',
+];
 
 export default function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -140,11 +151,21 @@ export default function Navbar() {
               ))}
             </Box>
 
-            <Box sx={{ flexGrow: 0 }}>
+            <Box 
+              sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                flexGrow: 0,
+                p: '2px 4px',
+              }}
+            >
               <Tooltip title="Open settings">
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <SimpleListMenu />
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt={UserService.getUsername()} src="/static/images/avatar/2.jpg" />
                 </IconButton>
+              </div>
               </Tooltip>
               <Menu
                 sx={{ mt: '45px' }}
@@ -198,52 +219,76 @@ function switchSettingAction(setting) {
 }
 
 
+function SimpleListMenu() {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const open = Boolean(anchorEl);
+  const handleClickListItem = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-function ChatOptionPane() {
-  const models = [
-      {
-          "index": 1,
-          "name": "gpt-3.5-turbo-0125"
-      },
-      {
-          "index": 2,
-          "name": "gpt-3.5-turbo-1106"
-      },
-      {
-          "index": 3,
-          "name": "gpt-4-1106-preview"
-      },
-      {
-          "index": 4,
-          "name": "gpt-4-1106-vision-preview"
-      }
-  ]
+  React.useEffect(() => {
+      const fetchDefaultModel = async () => {
+          const modelName = await getDefaultChatModel();
+          if (modelName) {
+              const index = options.indexOf(modelName);
+              if (index === -1) {
+                setSelectedIndex(1);
+              }else{
+                setSelectedIndex(index);
+              }
+          } else {
+            setSelectedIndex(1);
+          }
+      };
+      
+      fetchDefaultModel();
+  }, []);
 
-  const prompts = [
-      {
-          "index": 1,
-          "name": "Interviewer",
-          "prompt": ""
-      },
-      {
-          "index": 2,
-          "name": "Chat Assistant",
-          "prompt": ""
-      }
-  ]
+  const handleMenuItemClick = async (event, index) => {
+    setSelectedIndex(index);
+    await updateDefaultChatModel(options[index]);
+    setAnchorEl(null);
+  };
 
-  return [...prompts, ...models]
-  
-  // return (
-  //     <section className="chat--option--pane">
-  //         <h4>Model</h4>
-  //         <ModelSelector
-  //             models = {models}
-  //         />
-  //         <h4>Prompt</h4>
-  //         <ModelSelector
-  //             models = {prompts}
-  //         />
-  //     </section>
-  // )
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div>
+      <List
+        component="nav"
+        aria-label="Device settings"
+      >
+        <ListItemButton
+          onClick={handleClickListItem}
+        >
+          <ListItemText
+            primary={options[selectedIndex].toUpperCase()}
+          />
+        </ListItemButton>
+      </List>
+      <Menu
+        id="lock-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'lock-button',
+          role: 'listbox',
+        }}
+      >
+        {options.map((option, index) => (
+          <MenuItem
+            key={option}
+            selected={index === selectedIndex}
+            onClick={(event) => handleMenuItemClick(event, index)}
+          >
+            {option}
+          </MenuItem>
+        ))}
+      </Menu>
+    </div>
+  );
 }

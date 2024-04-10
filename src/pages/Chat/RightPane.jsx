@@ -13,6 +13,7 @@ import InputBase from '@mui/material/InputBase';
 import InputAdornment from '@mui/material/InputAdornment';
 import SendIcon from '@mui/icons-material/Send';
 import IconButton from '@mui/material/IconButton';
+import Markdown from 'react-markdown';
 
 export default function RightPane(props) {
 
@@ -125,7 +126,11 @@ function ChatHighlighter (prop) {
   const elements = parts.map((part, index) => {
     if (index % 3 === 0) {
       // Regular text
-      return <span key={index}>{part}</span>;
+      return <span key={index}>
+        <Markdown>
+            {part}
+        </Markdown>
+    </span>;
     } else if (index % 3 === 1) {
       // Language name
       return null;
