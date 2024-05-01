@@ -6,6 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import ThreadMenu from './ThreadMenu';
 
 export default function ThreadListItem(props) {
   return (
@@ -19,11 +20,11 @@ export default function ThreadListItem(props) {
             secondaryAction={
               <IconButton 
                 edge="end" aria-label="comments" 
-                onClick={() => {
-                  props.onDeleteThread(value["id"]);
-                }}
               >
-                <DeleteIcon />
+                <ThreadMenu 
+                  onDeleteThread={props.onDeleteThread}
+                  id={value["id"]}
+                />
               </IconButton>
             }
           >
