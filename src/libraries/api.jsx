@@ -169,6 +169,18 @@ export async function deleteThread(threadID) {
   }
 }
 
+export async function updateThread(threadID, threadName, prompt) {
+  try {
+    const url = getChatServicePaths("updateThread");
+    const finalUrl = `${url}/${threadID.toString()}`;
+    const data = { name: threadName, prompt: prompt }; // Form data
+    return await putData(finalUrl, data);
+  } catch (error) {
+    console.error('There was a problem with updating the thread:', error);
+    throw error; // Propagate the error
+  }
+}
+
 export async function getThreadMessages(threadID) {
   try {
     const url = getChatServicePaths("getMessages");
