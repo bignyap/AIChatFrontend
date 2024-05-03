@@ -20,7 +20,10 @@ import { Link, Outlet } from 'react-router-dom';
 import "../../styles/LeftPane.css"
 import UserService from '../../services/UserService';
 import BasicModal from '../Common/Modal'
-import {updateDefaultChatModel, getDefaultChatModel} from '../../libraries/api'
+import {
+  updateDefaultChatModel, getDefaultChatModel, 
+  updateDefaultPrompt, getDefaultPrompt, getAllPrompts
+} from '../../libraries/api'
 
 const pages = [
   { name: 'Chat', link: 'chat' },
@@ -159,14 +162,17 @@ export default function Navbar() {
                 p: '2px 4px',
               }}
             >
-              <Tooltip title="Open settings">
+              
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <SimpleListMenu />
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={UserService.getUsername()} src="/static/images/avatar/2.jpg" />
-                </IconButton>
+                <PromptList />
+                <ModelList />
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar alt={UserService.getUsername()} src="/static/images/avatar/2.jpg" />
+                  </IconButton>
+                </Tooltip>
+                
               </div>
-              </Tooltip>
               <Menu
                 sx={{ mt: '45px' }}
                 id="menu-appbar"
@@ -219,7 +225,7 @@ function switchSettingAction(setting) {
 }
 
 
-function SimpleListMenu() {
+function ModelList() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
   const open = Boolean(anchorEl);
@@ -286,6 +292,99 @@ function SimpleListMenu() {
             onClick={(event) => handleMenuItemClick(event, index)}
           >
             {option}
+          </MenuItem>
+        ))}
+      </Menu>
+    </div>
+  );
+}
+
+
+function PromptList() {
+  
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [listPrompts, setListPrompts] = React.useState([]);
+  const open = Boolean(anchorEl);
+  const handleClickListItem = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  React.useEffect(() => {
+      const fetchDefaultPrompt = async () => {
+          
+          const allPrompts = await getAllPrompts();
+          if (allPrompts.length > 0) {
+            setListPrompts(allPrompts)
+          }
+          
+          const defaultPrompt = await getDefaultPrompt();
+          if (defaultPrompt) {
+            const index = allPrompts.findIndex(obj => obj["id"] === defaultPrompt["id"]);
+            setSelectedIndex(index)
+          }
+      };
+      
+      fetchDefaultPrompt();
+  }, []);
+
+  const handleMenuItemClick = async (event, index, id) => {
+    if (id == -1){
+      alert("Create a new prompt")
+    } else {
+      setSelectedIndex(index);
+      await updateDefaultPrompt(id);
+    }
+    setAnchorEl(null);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    (listPrompts.length > 0) &&
+    <div>
+      <List
+        component="nav"
+        aria-label="Device settings"
+      >
+        <ListItemButton
+          onClick={handleClickListItem}
+        >
+          <ListItemText
+            primary={listPrompts[selectedIndex]["name"]}
+          />
+        </ListItemButton>
+      </List>
+      <Menu
+        id="lock-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'lock-button',
+          role: 'listbox',
+        }}
+      >
+        {[
+          ...listPrompts, {
+            "name": "Create another prompt...", 
+            "id": -1, 
+            "prompt": "Create a new prompt"
+          }
+        ].map((prompt, index) => (
+          <MenuItem
+            key={prompt["id"]}
+            selected={index === selectedIndex}
+            onClick={(event) => handleMenuItemClick(
+              event, index, 
+              (prompt["id"] == -1) ? -1 : listPrompts[index]["id"]
+            )}
+          >
+            <Tooltip title = {prompt["prompt"]} placement="left">
+              {prompt["name"]}
+            </Tooltip>
           </MenuItem>
         ))}
       </Menu>

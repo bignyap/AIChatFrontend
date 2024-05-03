@@ -7,7 +7,10 @@ const api_paths = {
         "createMessage": "/chat/create_chat_message",
         "getMessages": "/chat/get_chat_messages",
         "getDefaultModel": "/chat/get_default_chat_model",
-        "updateDefaultModel": "/chat/update_default_chat_model"
+        "updateDefaultModel": "/chat/update_default_chat_model",
+        "listPrompts": "/prompt/list_user_prompt",
+        "getDefaultPrompt": "/prompt/get_default_user_prompt",
+        "updateDefaultPrompt": "/prompt/update_default_user_prompt"
     }
 };
 

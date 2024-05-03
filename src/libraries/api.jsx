@@ -125,6 +125,26 @@ export async function getDefaultChatModel() {
   }
 }
 
+export async function getDefaultPrompt() {
+  try {
+    const url = getChatServicePaths("getDefaultPrompt")
+    const response = await getData(url);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getAllPrompts() {
+  try {
+    const url = getChatServicePaths("listPrompts");
+    return await getData(url);
+  } catch (error) {
+    console.error('There was a problem with the fetch operation:', error);
+    throw error;
+  }
+}
+
 export async function updateDefaultChatModel(modelName) {
   try {
     const url = getChatServicePaths("updateDefaultModel");
@@ -132,6 +152,17 @@ export async function updateDefaultChatModel(modelName) {
     return await putData(url, data);
   } catch (error) {
     console.error('There was a problem with updating the chat model:', error);
+    throw error; // Propagate the error
+  }
+}
+
+export async function updateDefaultPrompt(promptID) {
+  try {
+    const url = getChatServicePaths("updateDefaultPrompt");
+    const data = { default_prompt_id: promptID }; // Form data
+    return await putData(url, data);
+  } catch (error) {
+    console.error('There was a problem with updating the default prompt:', error);
     throw error; // Propagate the error
   }
 }
