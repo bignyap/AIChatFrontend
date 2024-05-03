@@ -17,10 +17,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { Link, Outlet } from 'react-router-dom';
 
-import "../styles/LeftPane.css"
-import UserService from '../services/UserService';
-import BasicModal from './Modal'
-import {updateDefaultChatModel, getDefaultChatModel} from '../libraries/api'
+import "../../styles/LeftPane.css"
+import UserService from '../../services/UserService';
+import BasicModal from '../Common/Modal'
+import {updateDefaultChatModel, getDefaultChatModel} from '../../libraries/api'
 
 const pages = [
   { name: 'Chat', link: 'chat' },

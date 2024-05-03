@@ -1,9 +1,10 @@
 import React from 'react';
-import "../../styles/LeftPane.css";
 import AddIcon from '@mui/icons-material/Add';
-import ThreadListItem from "../../components/ListItem"
-import { createThread, deleteThread, updateThread } from "../../libraries/api";
 import Button from '@mui/material/Button';
+
+import "../../styles/LeftPane.css";
+import ThreadListItem from "../../components/LeftPane/ListItem"
+import { createThread, deleteThread, updateThread } from "../../libraries/api";
 
 export default function LeftPane(props) {
 

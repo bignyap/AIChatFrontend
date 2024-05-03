@@ -1,9 +1,5 @@
 import React, {useState, useEffect} from "react"
 import Box from '@mui/material/Box';
-import FixedBottom from "../../components/FixedBottom"
-import "../../styles/RightPane.css"
-import { getThreadMessages, createThreadMessages } from "../../libraries/api"
-import CodeHighlighter from "../../components/CodeHighlighter"
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -14,6 +10,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import SendIcon from '@mui/icons-material/Send';
 import IconButton from '@mui/material/IconButton';
 import Markdown from 'react-markdown';
+
+import FixedBottom from "../../components/Common/FixedBottom"
+import "../../styles/RightPane.css"
+import { getThreadMessages, createThreadMessages } from "../../libraries/api"
+import CodeHighlighter from "../../components/Common/CodeHighlighter"
 
 export default function RightPane(props) {
 

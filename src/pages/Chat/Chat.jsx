@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getChatThreads } from '../../libraries/api';
-import ClippedDrawer from '../../components/ClippedDrawer';
+import ClippedDrawer from '../../components/Common/ClippedDrawer';
 import LeftPane from './LeftPane';
 import RightPane from './RightPane';
 

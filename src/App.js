@@ -6,8 +6,8 @@ import {
   Route 
 } from 'react-router-dom';
 
-import Navbar from './components/Navbar';
-import Error from './components/Error'
+import Navbar from './components/Navbar/Navbar';
+import Error from './components/Common/Error'
 
 import ChatPage from './pages/Chat/Chat';
 import UtilityPage from './pages/Utility';

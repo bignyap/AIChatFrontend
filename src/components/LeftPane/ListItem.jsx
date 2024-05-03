@@ -6,7 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ThreadMenu from './ThreadMenu';
-import BasicModal from './Modal';
+import BasicModal from '../Common/Modal';
 
 export default function ThreadListItem(props) {
   
@@ -108,7 +108,7 @@ export default function ThreadListItem(props) {
         <BasicModal
           open={openModal}
           handleClose={() => setOpenModal(false)}
-          title={`Update your prompt for chat thread - ${modalData.name}`}
+          title={`${modalData.name} - update the prompt`}
           content={modalData.prompt}
           // handleUpdateSubmit={() => handleUpdateSubmit(modalData.id, modalData.name, modalData.prompt)}
         />
