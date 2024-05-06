@@ -18,6 +18,9 @@ export default function MultiLineTextField(props) {
             placeholder={props.placeholder}
             value= {props.value}
             onChange= {props.onChange}
+            rows={props.rows}
+            maxRows={props.maxRows}
+            multiline
         />
     </Box>
   );

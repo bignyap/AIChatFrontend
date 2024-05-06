@@ -108,7 +108,7 @@ export default function ThreadListItem(props) {
         <BasicModal
           open={openModal}
           handleClose={() => setOpenModal(false)}
-          title={`${modalData.name} - update the prompt`}
+          title={`Edit Thread  - ${modalData.name}`}
           content={modalData.prompt}
           // handleUpdateSubmit={() => handleUpdateSubmit(modalData.id, modalData.name, modalData.prompt)}
         />
