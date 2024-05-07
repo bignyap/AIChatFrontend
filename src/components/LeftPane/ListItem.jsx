@@ -6,14 +6,14 @@ import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ThreadMenu from './ThreadMenu';
-import BasicModal from '../Common/Modal';
+import PromptDialog from '../prompt/PromptDialog';
 
 export default function ThreadListItem(props) {
   
   const [editingThreadId, setEditingThreadId] = useState(null);
   const [editedThreadName, setEditedThreadName] = useState("");
   const [openModal, setOpenModal] = useState(false); // State to control modal visibility
-  const [modalData, setModalData] = useState({ id: null, name: "", prompt: "" }); // State to store modal data
+  const [modalData, setModalData] = useState({ id: null, name: "", prompt: "", promptId: null }); // State to store modal data
 
   const handleRenameButtonClick = (id, name) => {
     setEditingThreadId(id);
@@ -26,6 +26,7 @@ export default function ThreadListItem(props) {
 
   const handleRenameSubmit = () => {
     if (editedThreadName.trim() !== "") {
+      console.log("Pressed Enter");
       props.onRenameThread(editingThreadId, editedThreadName);
       setEditingThreadId(null);
     }
@@ -37,16 +38,13 @@ export default function ThreadListItem(props) {
     }
   };
 
-  const handleUpdateButtonClick = (id, name, prompt) => {
-    setModalData({ id, name, prompt }); // Set data for the modal
-    setOpenModal(true); // Open the modal
-    console.log("I am clicked")
-    console.log(openModal)
-    console.log(modalData)
+  const handleUpdateButtonClick = (id, name, prompt, promptId) => {
+    setModalData({ id, name, prompt, promptId }); // Set data for the modal
+    setOpenModal(true);
   };
 
-  const handleUpdateSubmit = (id, name, prompt) => {
-    props.onUpdateThread(id, name, prompt);
+  const handleUpdateSubmit = (id, name, prompt, promptId) => {
+    props.onUpdateThread(id, name, prompt, promptId);
     setOpenModal(false); // Close the modal after submitting
   };
 
@@ -68,6 +66,7 @@ export default function ThreadListItem(props) {
                   id={value["id"]}
                   name={value["name"]}
                   prompt={value["prompt"]}
+                  promptId={value["prompt_id"]}
                   onRenameThread={handleRenameButtonClick}
                   onUpdateThread={handleUpdateButtonClick}
                 />
@@ -105,12 +104,14 @@ export default function ThreadListItem(props) {
       })}
       </List>
       {openModal && ( // Render the modal if openModal state is true
-        <BasicModal
+        <PromptDialog
           open={openModal}
+          title={modalData.name}
+          id={modalData.id}
+          prompt={modalData.prompt}
+          promptId={modalData.promptId}
           handleClose={() => setOpenModal(false)}
-          title={`Edit Thread  - ${modalData.name}`}
-          content={modalData.prompt}
-          // handleUpdateSubmit={() => handleUpdateSubmit(modalData.id, modalData.name, modalData.prompt)}
+          onUpdateSubmit={handleUpdateSubmit}
         />
       )}
     </React.Fragment>

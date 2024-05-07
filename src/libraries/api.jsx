@@ -145,6 +145,17 @@ export async function getAllPrompts() {
   }
 }
 
+export async function createPrompt (promptName, prompt) {
+  try {
+    const url = getChatServicePaths("createPrompt");
+    const data = { prompt_name: promptName, prompt: prompt }; // Form data
+    return await postData(url, data);
+  } catch (error) {
+    console.error('There was a problem with the creating the prompt:', error);
+    throw error; // Propagate the error
+  }
+} 
+
 export async function updateDefaultChatModel(modelName) {
   try {
     const url = getChatServicePaths("updateDefaultModel");
@@ -200,12 +211,22 @@ export async function deleteThread(threadID) {
   }
 }
 
-export async function updateThread(threadID, threadName, prompt) {
+export async function updateThread(threadID, threadName, prompt, promptId) {
   try {
     const url = getChatServicePaths("updateThread");
     const finalUrl = `${url}/${threadID.toString()}`;
-    const data = { name: threadName, prompt: prompt }; // Form data
-    return await putData(finalUrl, data);
+    let data = {name: threadName}
+    if (promptId == null && prompt == null && threadName == null){
+      return
+    }
+    if (promptId != null) {
+      data = { ...data, prompt_id: promptId };
+    }
+    if (prompt != null) {
+      data = { ...data, prompt: prompt };
+    }
+    const response = await putData(finalUrl, data);
+    return response
   } catch (error) {
     console.error('There was a problem with updating the thread:', error);
     throw error; // Propagate the error

@@ -22,8 +22,10 @@ import UserService from '../../services/UserService';
 import BasicModal from '../Common/Modal'
 import {
   updateDefaultChatModel, getDefaultChatModel, 
-  updateDefaultPrompt, getDefaultPrompt, getAllPrompts
+  updateDefaultPrompt, getDefaultPrompt, getAllPrompts,
+  createPrompt
 } from '../../libraries/api'
+import CreatePromptDialog from './CreatePrompt';
 
 const pages = [
   { name: 'Chat', link: 'chat' },
@@ -164,7 +166,7 @@ export default function Navbar() {
             >
               
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <PromptList />
+                <PromptListWithCreate />
                 <ModelList />
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -300,15 +302,11 @@ function ModelList() {
 }
 
 
-function PromptList() {
+function PromptListWithCreate() {
   
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [openModal, setOpenModal] = React.useState(false); // State to control modal visibility
   const [listPrompts, setListPrompts] = React.useState([]);
-  const open = Boolean(anchorEl);
-  const handleClickListItem = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   React.useEffect(() => {
       const fetchDefaultPrompt = async () => {
@@ -326,13 +324,59 @@ function PromptList() {
       };
       
       fetchDefaultPrompt();
-  }, []);
+  }, []); 
+
+  const handleCreatePrompt = async (event, promptName, prompt) => {
+    const response = await createPrompt(promptName, prompt);
+    setListPrompts(prevThreads => 
+      [
+        {
+          "id": response,
+          "user_id": null,
+          "name": promptName,
+          "prompt": prompt
+        }, 
+        ...prevThreads
+      ]
+    )
+  };
+
+  return (
+    <React.Fragment>
+      <>
+        <PromptList 
+          setOpenModal={setOpenModal}
+          listPrompts={listPrompts}
+          setSelectedIndex={setSelectedIndex}
+          selectedIndex={selectedIndex}
+        />
+      </>
+      {openModal && ( // Render the modal if openModal state is true
+        <CreatePromptDialog
+          open={openModal}
+          handleClose={() => setOpenModal(false)}
+          onSubmit={handleCreatePrompt}
+        />
+      )}
+    </React.Fragment>
+  )
+}
+
+
+function PromptList(props) {
+  
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClickListItem = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleMenuItemClick = async (event, index, id) => {
-    if (id == -1){
-      alert("Create a new prompt")
+    if (id === -1){
+      props.setOpenModal(true)
     } else {
-      setSelectedIndex(index);
+      props.setSelectedIndex(index);
       await updateDefaultPrompt(id);
     }
     setAnchorEl(null);
@@ -343,7 +387,7 @@ function PromptList() {
   };
 
   return (
-    (listPrompts.length > 0) &&
+    (props.listPrompts.length > 0) &&
     <div>
       <List
         component="nav"
@@ -353,7 +397,7 @@ function PromptList() {
           onClick={handleClickListItem}
         >
           <ListItemText
-            primary={listPrompts[selectedIndex]["name"]}
+            primary={props.listPrompts[props.selectedIndex]["name"]}
           />
         </ListItemButton>
       </List>
@@ -368,7 +412,7 @@ function PromptList() {
         }}
       >
         {[
-          ...listPrompts, {
+          ...props.listPrompts, {
             "name": "Create another prompt...", 
             "id": -1, 
             "prompt": "Create a new prompt"
@@ -376,10 +420,10 @@ function PromptList() {
         ].map((prompt, index) => (
           <MenuItem
             key={prompt["id"]}
-            selected={index === selectedIndex}
+            selected={index === props.selectedIndex}
             onClick={(event) => handleMenuItemClick(
               event, index, 
-              (prompt["id"] == -1) ? -1 : listPrompts[index]["id"]
+              (prompt["id"] === -1) ? -1 : props.listPrompts[index]["id"]
             )}
           >
             <Tooltip title = {prompt["prompt"]} placement="left">

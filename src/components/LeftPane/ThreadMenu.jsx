@@ -28,7 +28,7 @@ export default function ThreadMenu(props) {
     } else if (selectedOption === "Rename"){
       props.onRenameThread(props.id, props.name);
     } else if (selectedOption === "Update") {
-      props.onUpdateThread(props.id, props.name, props.prompt)
+      props.onUpdateThread(props.id, props.name, props.prompt, props.promptId)
     }
   };
 

@@ -21,7 +21,8 @@ export default function LeftPane(props) {
                 "creator_id": 2, 
                 "date_created": currentDateISO, 
                 "name": name,
-                "prompt": null
+                "prompt": null,
+                "prompt_id": null
             }, 
             ...prevThreads
         ]);
@@ -30,7 +31,7 @@ export default function LeftPane(props) {
 
     async function handleRenameThread(threadID, threadName) {
         try{
-            await updateThread(threadID, threadName, null)
+            await updateThread(threadID, threadName, null, null)
             props.onSelectThread(null);
         } catch (error) {
             throw error;
@@ -45,9 +46,9 @@ export default function LeftPane(props) {
         });
     };
 
-    async function handleUpdatePrompt(threadID, threadName, prompt) {
+    async function handleUpdatePrompt(threadID, threadName, prompt, promptId) {
         try{
-            await updateThread(threadID, threadName, prompt)
+            await updateThread(threadID, threadName, prompt, promptId)
             props.onSelectThread(null);
         } catch (error) {
             throw error;
@@ -55,7 +56,7 @@ export default function LeftPane(props) {
         setThreads(prevThreads => {
             return prevThreads.map(thread => {
                 if (thread["id"] === threadID) {
-                    return { ...thread, "prompt": prompt};
+                    return { ...thread, "prompt": prompt, "prompt_id": promptId};
                 }
                 return thread;
             });
